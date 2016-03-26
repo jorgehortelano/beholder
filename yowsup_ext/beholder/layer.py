@@ -68,9 +68,9 @@ class BeholderLayer(YowInterfaceLayer):
        self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
        try:
            if self.__pir_pin > 0 :
-               gpio.add_event_detect(self.__pir_pin, gpio.RISING, callback=lambda x: self.motion_sensor(self.__pir_pin, messageProtocolEntity), bouncetime=1000)
+               gpio.add_event_detect(self.__pir_pin, gpio.RISING, callback=lambda x: self.motion_sensor(self.__pir_pin, messageProtocolEntity), bouncetime=500)
            if self.__sound_pin > 0 :
-               gpio.add_event_detect(self.__sound_pin, gpio.RISING, callback=lambda x: self.sound_sensor(self.__sound_pin, messageProtocolEntity), bouncetime=1000)
+               gpio.add_event_detect(self.__sound_pin, gpio.RISING, callback=lambda x: self.sound_sensor(self.__sound_pin, messageProtocolEntity), bouncetime=500)
        except KeyboardInterrupt:
            print("\n"+ self.__alias +" down")
            sys.exit(0)
