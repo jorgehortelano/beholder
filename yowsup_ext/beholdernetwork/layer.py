@@ -49,12 +49,18 @@ class BeholderLayer(YowInterfaceLayer):
            messageProtocolEntity.setBody("Disabling node: "+ self.__alias)
            self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
 
+    def sayHello(self,messageProtocolEntity):
+        messageProtocolEntity.setBody("Hello from: "+ self.__alias)
+        self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
 
     @ProtocolEntityCallback("receipt")
     def onReceipt(self, entity):
         self.toLower(entity.ack())
 
     def onTextMessage(self,messageProtocolEntity):
+        #Node list
+        if "hello" in string.lower(messageProtocolEntity.getBody()): 
+            self.sayHello(messageProtocolEntity)
         #Enable/Disable node if needed.
         if "enable" in string.lower(messageProtocolEntity.getBody()):
             if string.lower(self.__alias) in string.lower(messageProtocolEntity.getBody()):
@@ -66,17 +72,19 @@ class BeholderLayer(YowInterfaceLayer):
                 self.disableNode(messageProtocolEntity)
         # Execute command if possible.
         elif string.lower(messageProtocolEntity.getBody())=="ls":
-            command = ['ls', '-l']
-            self.executeCommand(messageProtocolEntity, command)
+            if self.__node_enabled == True :
+                command = ['ls', '-l']
+                self.executeCommand(messageProtocolEntity, command)
         elif string.lower(messageProtocolEntity.getBody())=="reboot":
-            command = ['sudo', 'reboot']
-            self.executeCommand(messageProtocolEntity, command)
+            if self.__node_enabled == True :
+                command = ['sudo', 'reboot']
+                self.executeCommand(messageProtocolEntity, command)
         else:
             # just print info
-            print("Invalid command '%s' from %s" % (messageProtocolEntity.getBody(), messageProtocolEntity.getFrom(False)))
-            messageProtocolEntity.setBody("Invalid command '%s'." % messageProtocolEntity.getBody() )
-            self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
-        #os.system("notify-send 'Mensaje de Whatsapp' '{mensje}'".format(mensje=messageProtocolEntity.getBody()))
+            if self.__node_enabled == True :
+                print("Invalid command '%s' from %s" % (messageProtocolEntity.getBody(), messageProtocolEntity.getFrom(False)))
+                messageProtocolEntity.setBody("Invalid command '%s'." % messageProtocolEntity.getBody() )
+                self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
 
     #Media messages cannot send commands. 
     def onMediaMessage(self, messageProtocolEntity):
