@@ -20,12 +20,22 @@ At the end you will have something like:
 	phone=39111111111
 	password=c5NWTzOrsgCRQr77Yhwafdj+Tgg=
 
-You need to add now `allowed_users` and `alias` parameters.
-allowed_users parameters define which phone numbers can send commands to the server. 
-alias parameter is the name of the device that will be shown in the whatsapp messages. 
+You need to add a set of new parameters:
+
+`allowed_users` parameter define which phone numbers can send commands to the server. 
+
+`alias` parameter is the name of the device that will be shown in the whatsapp messages. 
+
+`pir_pin` parameter is the pin number ([BCM mode](https://pinout.xyz/)) of the raspberry where the signal wire of the Infrared motion sensor is attached.
+
+`sound_pin` parameter is the pin number ([BCM mode](https://pinout.xyz/)) of the raspberry where the signal wire of the sound sensor is attached. 
+
+An example of these parameters:
 
 	allowed_users = ['39111222333@s.whatsapp.net']
 	alias = TheEye
+	pir_pin = 4
+	sound_pin = 17
 
 ## Execution
 
@@ -38,8 +48,8 @@ Where the file.config is the previous defined configuration file.
 If everything is running, from your whatsapp application, you can use the next messages as commands:
 
 	hello		will show the name (alias) of the device.
-	enable <alias>	select the device to accept other commands.
+	select <alias>	select the device to accept other commands.
 	detect		start the sensor detection for the selected device.
 	disable <alias>	stops sending alerts from sensors.
 
-You can use the commands in the order showed below. 
+For using this application at least you need to select the node first, and then start the detection. 
