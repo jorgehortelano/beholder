@@ -17,6 +17,7 @@ Create a configuration file where the whatsapp credentials are, as in other exam
 	phone=39111111111
 	password=c5NWTzOrsgCRQr77Yhwafdj+Tgg=
 	allowed_users = ['39111222333@s.whatsapp.net']
+	alias = TheEye
 
 Note: Allowed_users parameters define which phone numbers can send commands to the server. 
 

@@ -3,6 +3,13 @@ import string
 import subprocess
 from yowsup.layers.interface                           import YowInterfaceLayer, ProtocolEntityCallback
 
+#Define raspberry GPIO input/output
+GPIO.setmode(GPIO.BCM)
+PIR_PIN = 4
+SOUND_PIN = 17
+GPIO.setup(PIR_PIN, GPIO.IN)
+GPIO.setup(SOUND_PIN, GPIO.IN)
+
 class BeholderLayer(YowInterfaceLayer):
     __allowed_users = []
     __alias = ""
@@ -53,6 +60,20 @@ class BeholderLayer(YowInterfaceLayer):
         messageProtocolEntity.setBody("Hello from: "+ self.__alias)
         self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
 
+    def detect(self,messageProtocolEntity):
+       try:
+           GPIO.add_event_detect(PIR_PIN, GPIO.RISING, callback=MOTION)
+           GPIO.add_event_detect(SOUND_PIN, GPIO.RISING, callback=SOUND)
+               while self.__node_enabled == True:
+                   time.sleep(100)
+
+
+    def MOTION(PIR_PIN):
+       print "Motion Detected!"
+
+    def SOUND(SOUND_PIN):
+       print "Sound Detected!"
+
     @ProtocolEntityCallback("receipt")
     def onReceipt(self, entity):
         self.toLower(entity.ack())
@@ -62,7 +83,7 @@ class BeholderLayer(YowInterfaceLayer):
         if "hello" in string.lower(messageProtocolEntity.getBody()): 
             self.sayHello(messageProtocolEntity)
         #Enable/Disable node if needed.
-        if "enable" in string.lower(messageProtocolEntity.getBody()):
+        elif "enable" in string.lower(messageProtocolEntity.getBody()):
             if string.lower(self.__alias) in string.lower(messageProtocolEntity.getBody()):
                 self.enableNode(messageProtocolEntity)
             else:
@@ -70,6 +91,9 @@ class BeholderLayer(YowInterfaceLayer):
         elif "disable" in string.lower(messageProtocolEntity.getBody()):
             if string.lower(self.__alias) in string.lower(messageProtocolEntity.getBody()):
                 self.disableNode(messageProtocolEntity)
+        elif "detect" in string.lower(messageProtocolEntity.getBody()):
+            if self.__node_enabled == True :
+                self.detect():
         # Execute command if possible.
         elif string.lower(messageProtocolEntity.getBody())=="reboot":
             if self.__node_enabled == True :
