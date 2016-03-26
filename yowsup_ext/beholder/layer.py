@@ -69,7 +69,7 @@ class BeholderLayer(YowInterfaceLayer):
     def unselectNode(self,messageProtocolEntity):
        print("Unselecting node: "+ self.__alias)
        self.__node_selected = False
-       messageProtocolEntity.setBody("Unselecting node '"+ self.__alias+"'")
+       messageProtocolEntity.setBody("Unselecting node '" + self.__alias + "'")
        self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
 
 
@@ -101,20 +101,26 @@ class BeholderLayer(YowInterfaceLayer):
             messageProtocolEntity.setBody("Sound detected in '" + self.__alias + "'")
             self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
 
+    def showHelp(self, messageProtocolEntity):
+        messageProtocolEntity.setBody("Available commands:\n\thello\n\tselect <alias>\n\tenable\n\tdisable")
+        self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
+
     @ProtocolEntityCallback("receipt")
     def onReceipt(self, entity):
         self.toLower(entity.ack())
 
     def onTextMessage(self,messageProtocolEntity):
+        if "help" in string.lower(messageProtocolEntity.getBody()):
+            self.showHelp(messageProtocolEntity)
         #Node list
-        if "hello" in string.lower(messageProtocolEntity.getBody()): 
+        elif "hello" in string.lower(messageProtocolEntity.getBody()): 
             self.sayHello(messageProtocolEntity)
         #Enable/Disable node if needed.
+        elif "unselect" in string.lower(messageProtocolEntity.getBody()):
+            self.unselectNode(messageProtocolEntity)
         elif "select" in string.lower(messageProtocolEntity.getBody()):
             if string.lower(self.__alias) in string.lower(messageProtocolEntity.getBody()):
                 self.selectNode(messageProtocolEntity)
-        elif "unselect" in string.lower(messageProtocolEntity.getBody()):
-            self.unselectNode(messageProtocolEntity)
         elif "disable" in string.lower(messageProtocolEntity.getBody()):
             if self.__node_selected == True:
                 self.disableNode(messageProtocolEntity)
