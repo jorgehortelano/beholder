@@ -1,5 +1,5 @@
-# Beholder Network
-This project is based on the yowsup-commandserver extension for yowsup. The scope is to control a group of raspberry device each of them has one or more sensors for motion or sound detection.
+# Beholder
+This project is based on the [yowsup-commandserver] (https://github.com/jorgehortelano/yowsup-commandserver) extension for yowsup. The scope is to control a group of raspberry device each of them has one or more sensors for motion or sound detection.
 
 ## Installation
 
@@ -24,7 +24,7 @@ Note: Allowed_users parameters define which phone numbers can send commands to t
 
 To launch the application execute:
 
-	beholder-network run -c <file.config>
+	beholder run -c <file.config>
 	
 Where the file.config is the previous defined configuration file.
 
