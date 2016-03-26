@@ -50,9 +50,9 @@ class YowArgParser(argparse.ArgumentParser):
         else:
             logging.basicConfig(level = logging.INFO)
 
-class CommandServerArgParser(YowArgParser):
+class BeholderArgParser(YowArgParser):
     def __init__(self, *args, **kwargs):
-        super(CommandServerArgParser, self).__init__(*args, **kwargs)
+        super(BeholderArgParser, self).__init__(*args, **kwargs)
         self.description = "Run a yowsup-commandserver"
 
         configGroup = self.add_argument_group("Configuration options for demos")
@@ -65,7 +65,7 @@ class CommandServerArgParser(YowArgParser):
         configGroup.add_argument("-M", "--unmoxie", action="store_true", help="Disable E2E Encryption")
 
     def process(self):
-        super(CommandServerArgParser, self).process()
+        super(BeholderArgParser, self).process()
         self.startCommandServer()
 
     def _getCredentials(self):
@@ -85,23 +85,35 @@ class CommandServerArgParser(YowArgParser):
             return config["allowed_users"]
         else:
             return None
+    def _getAlias(self):
+        if self.args["config"]:
+            config = self.getConfig(self.args["config"])
+            assert "alias" in config, "Must specify the alias of this device!"
+            return config["alias"]
+        else:
+            return None
 
     def startCommandServer(self):
         from yowsup_ext import commandserver
-        from yowsup_ext.commandserver.stack import YowsupCommandServerStack
+        from yowsup_ext.beholdernetwork.stack import BeholderStack
         credentials = self._getCredentials()
         allowed_users =  self._getAllowedUsers()
+        alias = self._getAlias()
+        
         if not credentials:
             print("Error: You must specify a configuration method")
             sys.exit(1)
         if not allowed_users:
             print("Error: Must specify at least one allowed user in config file")
             sys.exit(1)
+        if not alias:
+            print("Error: Must specify the alias of this device in config file")
+            sys.exit(1)
         try:
-            stack = YowsupCommandServerStack(credentials, allowed_users, not self.args["unmoxie"])
+            stack = BeholderStack(credentials, allowed_users, alias, not self.args["unmoxie"])
             stack.start()
         except KeyboardInterrupt:
-            print("\nYowsdown")
+            print("\n"+ alias +" down")
             sys.exit(0)
 
 if __name__ == "__main__":
@@ -110,7 +122,7 @@ if __name__ == "__main__":
         del args[0]
 
     modeDict = {
-        "run":        CommandServerArgParser,
+        "run":        BeholderArgParser,
         "version":      None
     }
 
@@ -122,7 +134,7 @@ if __name__ == "__main__":
 
     mode = args[0]
     if mode == "version":
-        print("yowsup-commandserver v%s\nUsing yowsup v%s" % (__version__, yowsup.__version__))
+        print("beholder-network v%s\nUsing yowsup v%s" % (__version__, yowsup.__version__))
         sys.exit(0)
     else:
         parser = modeDict[mode]()
