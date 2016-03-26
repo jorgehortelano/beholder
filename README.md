@@ -49,7 +49,8 @@ If everything is running, from your whatsapp application, you can use the next m
 
 	hello		will show the name (alias) of the device.
 	select <alias>	select the device to accept other commands.
-	detect		start the sensor detection for the selected device.
-	disable <alias>	stops sending alerts from sensors.
+	enable		start the sensor detection for the selected device.
+	disable		stops sending alerts from sensors.
+	help            shows these options.
 
 For using this application at least you need to select the node first, and then start the detection. 
