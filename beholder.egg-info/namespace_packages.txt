@@ -1,3 +1,0 @@
-yowsup_ext
-yowsup_ext.beholder
-yowsup_ext.layers

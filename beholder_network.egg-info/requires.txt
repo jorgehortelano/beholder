@@ -1,2 +1,0 @@
-yowsup2==2.4.48
-beholder-network

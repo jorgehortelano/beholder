@@ -1,1 +1,0 @@
-https://github.com/tgalal/yowsup/archive/develop.zip#egg=yowsup2-2.4.48

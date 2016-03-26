@@ -4,4 +4,4 @@ yowsup.config
 *~
 /build
 /dist
-/yowsup_commandserver.egg-info
+/*.egg-info
