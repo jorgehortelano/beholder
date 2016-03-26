@@ -23,8 +23,8 @@ At the end you will have something like:
 You need to add now `allowed_users` and `alias` parameters.
 `allowed_users` parameter define which phone numbers can send commands to the server. 
 `alias` parameter is the name of the device that will be shown in the whatsapp messages. 
-`pir_pin` parameter is the pin number (BCM mode)[https://pinout.xyz/] of the raspberry where the signal wire of the Infrared motion sensor is attached.
-`sound_pin` parameter is the pin number (BCM mode)[https://pinout.xyz/] of the raspberry where the signal wire of the sound sensor is attached. 
+`pir_pin` parameter is the pin number ([BCM mode](https://pinout.xyz/)) of the raspberry where the signal wire of the Infrared motion sensor is attached.
+`sound_pin` parameter is the pin number ([BCM mode](https://pinout.xyz/)) of the raspberry where the signal wire of the sound sensor is attached. 
 
 	allowed_users = ['39111222333@s.whatsapp.net']
 	alias = TheEye
