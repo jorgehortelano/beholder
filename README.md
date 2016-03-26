@@ -48,8 +48,8 @@ Where the file.config is the previous defined configuration file.
 If everything is running, from your whatsapp application, you can use the next messages as commands:
 
 	hello		will show the name (alias) of the device.
-	enable <alias>	select the device to accept other commands.
+	select <alias>	select the device to accept other commands.
 	detect		start the sensor detection for the selected device.
 	disable <alias>	stops sending alerts from sensors.
 
-You can use the commands in the order showed below. 
+For using this application at least you need to select the node first, and then start the detection. 
