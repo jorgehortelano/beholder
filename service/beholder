@@ -1,12 +1,16 @@
-#!/bin/bash
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          Beholder
+# Required-Start:    $local_fs
+# Required-Stop:     $local_fs
+# Should-Start:      $network
+# Should-Stop:       $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Beholder yowsup extension
+# Description: Beholder whatsapp sensor manager
 #
-# Startup script for beholder
-# 
-# chkconfig: 345 80 10
-# description: Beholder whatsapp sensor manager
-# processname: beholder
-# pidfile: /var/run/yowsup/beholder.pid
-# source function library
+### END INIT INFO
 
 ######################################
 # CONFIGURATION
@@ -14,7 +18,8 @@
 
 EXEC=/usr/local/bin/beholder
 CONFIG_FILE=/etc/yowsup.config
-PID_FILE=/var/run/yowsup/beholder.pid
+PID_FOLDER=/var/run/yowsup
+PID_FILE=beholder.pid
 WAIT_BEFORE_KILL=30
 
 ######################################
@@ -25,7 +30,8 @@ start()
 {
 	echo "Starting beholder whatsapp sensor manager..."
 	echo "--------------------------------------------"
-	/usr/bin/python ${EXEC} run -c ${CONFIG_FILE}
+	mkdir -p ${PID_FOLDER} 2>/dev/null
+	${EXEC} run -c ${CONFIG_FILE}
 	echo ""
 }
 
@@ -40,20 +46,20 @@ stop()
 forceStop() 
 {
    SLEEP=$WAIT_BEFORE_KILL
-   if [ -r "$PID_FILE" ]; then
+   if [ -r "$PID_FOLDER/$PID_FILE" ]; then
 	echo "Waiting for process: " `cat $PID_FILE`
 	while [ $SLEEP -gt 0 ]; do
 		sleep 1;
 		SLEEP=`expr $SLEEP - 1 `
 		
-		if [ ! -r "$PID_FILE" ]; then
+		if [ ! -r "$PID_FOLDER/$PID_FILE" ]; then
 			echo "Process exited normally."
 			break;
 		fi
 		
 		if [ $SLEEP -eq 0 ]; then
-			kill -9 `cat $PID_FILE` 2>/dev/null
-			rm -f ${PID_FILE} 
+			kill -9 `cat $PID_FOLDER/$PID_FILE` 2>/dev/null
+			rm -f ${PID_FOLDER}/${PID_FILE} 
 			echo "Process killed."
 		fi
 	done
@@ -62,15 +68,15 @@ forceStop()
 
       
 case $1 in  
-   start)  
-	start
+   start)
+	start;
 	;;   
    stop)     
-	stop
+	stop;
 	;;   
    restart)  
-	stop
-	start
+	stop;
+	start;
 	;;   
    *)
 	echo "Unknown option: $1"
