@@ -31,6 +31,7 @@ You need to add a set of new parameters:
 `sound_pin` parameter is the pin number ([BCM mode](https://pinout.xyz/)) of the raspberry where the signal wire of the sound sensor is attached. 
 
 An example of these parameters:
+
 	allowed_users = ['39111222333@s.whatsapp.net']
 	alias = TheEye
 	pir_pin = 4
