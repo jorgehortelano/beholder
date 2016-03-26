@@ -4,7 +4,7 @@ __author__ = "Jorge Hortelano"
 
 import sys, argparse, yowsup, logging
 
-logger = logging.getLogger("yowsup-commandserver")
+logger = logging.getLogger("beholder")
 
 class YowArgParser(argparse.ArgumentParser):
     def __init__(self, *args, **kwargs):
@@ -42,7 +42,7 @@ class YowArgParser(argparse.ArgumentParser):
     def process(self):
         self.args = vars(self.parse_args())
         if self.args["version"]:
-            print("yowsup-commandserver v%s\nUsing yowsup v%s" % (__version__, yowsup.__version__))
+            print("beholder v%s\nUsing yowsup v%s" % (__version__, yowsup.__version__))
             sys.exit(0)
 
         if self.args["debug"]:
@@ -95,7 +95,7 @@ class BeholderArgParser(YowArgParser):
 
     def startCommandServer(self):
         from yowsup_ext import commandserver
-        from yowsup_ext.beholdernetwork.stack import BeholderStack
+        from yowsup_ext.beholder.stack import BeholderStack
         credentials = self._getCredentials()
         allowed_users =  self._getAllowedUsers()
         alias = self._getAlias()
@@ -134,7 +134,7 @@ if __name__ == "__main__":
 
     mode = args[0]
     if mode == "version":
-        print("beholder-network v%s\nUsing yowsup v%s" % (__version__, yowsup.__version__))
+        print("beholder v%s\nUsing yowsup v%s" % (__version__, yowsup.__version__))
         sys.exit(0)
     else:
         parser = modeDict[mode]()

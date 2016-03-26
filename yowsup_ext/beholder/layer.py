@@ -71,10 +71,6 @@ class BeholderLayer(YowInterfaceLayer):
             if string.lower(self.__alias) in string.lower(messageProtocolEntity.getBody()):
                 self.disableNode(messageProtocolEntity)
         # Execute command if possible.
-        elif string.lower(messageProtocolEntity.getBody())=="ls":
-            if self.__node_enabled == True :
-                command = ['ls', '-l']
-                self.executeCommand(messageProtocolEntity, command)
         elif string.lower(messageProtocolEntity.getBody())=="reboot":
             if self.__node_enabled == True :
                 command = ['sudo', 'reboot']
