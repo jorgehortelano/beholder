@@ -4,6 +4,7 @@ import subprocess
 from yowsup.layers.interface                           import YowInterfaceLayer, ProtocolEntityCallback
 import RPi.GPIO as gpio
 import time
+import sys
 
 class BeholderLayer(YowInterfaceLayer):
     __allowed_users = []
@@ -67,21 +68,22 @@ class BeholderLayer(YowInterfaceLayer):
        self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
        try:
            if self.__pir_pin > 0 :
-               gpio.add_event_detect(self.__pir_pin, gpio.RISING, callback=lambda x: self.motion_sensor(self.__pir_pin, messageProtocolEntity), bouncetime=200)
+               gpio.add_event_detect(self.__pir_pin, gpio.RISING, callback=lambda x: self.motion_sensor(self.__pir_pin, messageProtocolEntity), bouncetime=1000)
            if self.__sound_pin > 0 :
-               gpio.add_event_detect(self.__sound_pin, gpio.RISING, callback=lambda x: self.sound_sensor(self.__sound_pin, messageProtocolEntity), bouncetime=200)
-           while self.__node_enabled == True:
-               time.sleep(100)
+               gpio.add_event_detect(self.__sound_pin, gpio.RISING, callback=lambda x: self.sound_sensor(self.__sound_pin, messageProtocolEntity), bouncetime=1000)
        except KeyboardInterrupt:
            print("\n"+ self.__alias +" down")
            sys.exit(0)
 
     def motion_sensor(self, pir_pin, messageProtocolEntity):
-        messageProtocolEntity.setBody("Motion detected in '"+ self.__alias+"'")
-        self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
+        if self.__node_enabled == True :
+            messageProtocolEntity.setBody("Motion detected in '" + self.__alias + "'")
+            self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
 
     def sound_sensor(self, sound_pini, messageProtocolEntity):
-        print "Sound Detected!"
+        if self.__node_enabled == True :
+            messageProtocolEntity.setBody("Sound detected in '" + self.__alias + "'")
+            self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
 
     @ProtocolEntityCallback("receipt")
     def onReceipt(self, entity):
@@ -104,7 +106,7 @@ class BeholderLayer(YowInterfaceLayer):
             if self.__node_enabled == True :
                 self.detect(messageProtocolEntity)
         # Execute command if possible.
-        elif string.lower(messageProtocolEntity.getBody())=="reboot":
+        elif string.lower(messageProtocolEntity.getBody()) == "reboot":
             if self.__node_enabled == True :
                 command = ['sudo', 'reboot']
                 self.executeCommand(messageProtocolEntity, command)
