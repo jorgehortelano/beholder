@@ -1,5 +1,5 @@
 # Beholder
-This project is based on the [yowsup-commandserver] (https://github.com/jorgehortelano/yowsup-commandserver) extension for yowsup. The scope is to control a group of raspberry device each of them has one or more sensors for motion or sound detection.
+This project is based on the [yowsup-commandserver] (https://github.com/jorgehortelano/yowsup-commandserver) extension for yowsup. The scope is to control a raspberry device that has one or more sensors for motion or sound detection.
 
 ## Installation
 
