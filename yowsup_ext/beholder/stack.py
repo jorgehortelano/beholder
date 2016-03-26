@@ -16,11 +16,11 @@ from yowsup.layers                             import YowParallelLayer
 
 
 class BeholderStack(object):
-    def __init__(self, credentials, allowed_users, alias, encryptionEnabled = False):
+    def __init__(self, credentials, allowed_users, alias, pir_pin, sound_pin, encryptionEnabled = False):
         if encryptionEnabled:
             from yowsup.layers.axolotl                     import YowAxolotlLayer
             layers = (
-                BeholderLayer(allowed_users, alias),
+                BeholderLayer(allowed_users, alias, pir_pin, sound_pin),
                 YowParallelLayer([YowAuthenticationProtocolLayer, YowMessagesProtocolLayer, YowReceiptProtocolLayer, YowAckProtocolLayer, YowMediaProtocolLayer, YowIqProtocolLayer, YowCallsProtocolLayer]),
                 YowAxolotlLayer,
                 YowLoggerLayer,
@@ -31,7 +31,7 @@ class BeholderStack(object):
             )
         else:
             layers = (
-                BeholderLayer(allowed_users, alias),
+                BeholderLayer(allowed_users, alias, pir_pin, sound_pin),
                 YowParallelLayer([YowAuthenticationProtocolLayer, YowMessagesProtocolLayer, YowReceiptProtocolLayer, YowAckProtocolLayer, YowMediaProtocolLayer, YowIqProtocolLayer, YowCallsProtocolLayer]),
                 YowLoggerLayer,
                 YowCoderLayer,

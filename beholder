@@ -93,12 +93,29 @@ class BeholderArgParser(YowArgParser):
         else:
             return None
 
+    def _getPirPin(self):
+        if self.args["config"]:
+            config = self.getConfig(self.args["config"])
+            return int(config["pir_pin"])
+        else:
+            return 0
+
+    def _getSoundPin(self):
+        if self.args["config"]:
+            config = self.getConfig(self.args["config"])
+            return int(config["sound_pin"])
+        else:
+            return 0
+
+
     def startCommandServer(self):
         from yowsup_ext import commandserver
         from yowsup_ext.beholder.stack import BeholderStack
         credentials = self._getCredentials()
         allowed_users =  self._getAllowedUsers()
         alias = self._getAlias()
+        pir_pin = self._getPirPin()
+        sound_pin = self._getSoundPin()
         
         if not credentials:
             print("Error: You must specify a configuration method")
@@ -110,7 +127,7 @@ class BeholderArgParser(YowArgParser):
             print("Error: Must specify the alias of this device in config file")
             sys.exit(1)
         try:
-            stack = BeholderStack(credentials, allowed_users, alias, not self.args["unmoxie"])
+            stack = BeholderStack(credentials, allowed_users, alias, pir_pin, sound_pin, not self.args["unmoxie"])
             stack.start()
         except KeyboardInterrupt:
             print("\n"+ alias +" down")

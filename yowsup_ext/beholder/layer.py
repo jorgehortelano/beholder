@@ -11,13 +11,15 @@ class BeholderLayer(YowInterfaceLayer):
     __alias = ""
     __node_enabled = False
     #Define raspberry gpio input/output
-    __pir_pin = 4
-    __sound_pin = 17
+    __pir_pin = 0
+    __sound_pin = 0
     
-    def __init__(self, allowed_users, alias):
+    def __init__(self, allowed_users, alias, pir_pin, sound_pin):
         super(BeholderLayer, self).__init__()
         self.__allowed_users = allowed_users
         self.__alias = alias
+        self.__pir_pin = pir_pin
+        self.__sound_pin = sound_pin
         #Define raspberry gpio input/output
         gpio.setmode(gpio.BCM)
         gpio.setup(self.__pir_pin, gpio.IN)
