@@ -2,23 +2,26 @@ import os
 import string
 import subprocess
 from yowsup.layers.interface                           import YowInterfaceLayer, ProtocolEntityCallback
-
-#Define raspberry GPIO input/output
-GPIO.setmode(GPIO.BCM)
-PIR_PIN = 4
-SOUND_PIN = 17
-GPIO.setup(PIR_PIN, GPIO.IN)
-GPIO.setup(SOUND_PIN, GPIO.IN)
+import RPi.GPIO as gpio
+import time
 
 class BeholderLayer(YowInterfaceLayer):
     __allowed_users = []
     __alias = ""
     __node_enabled = False
+    #Define raspberry gpio input/output
+    __pir_pin = 4
+    __sound_pin = 17
     
     def __init__(self, allowed_users, alias):
         super(BeholderLayer, self).__init__()
         self.__allowed_users = allowed_users
         self.__alias = alias
+        #Define raspberry gpio input/output
+        gpio.setmode(gpio.BCM)
+        gpio.setup(self.__pir_pin, gpio.IN)
+        gpio.setup(self.__sound_pin, gpio.IN)
+        
 
     #Executes a command if the user is in the allowed_user list. 
     def executeCommand(self, messageProtocolEntity, command):	
@@ -33,7 +36,6 @@ class BeholderLayer(YowInterfaceLayer):
 
     @ProtocolEntityCallback("message")
     def onMessage(self, messageProtocolEntity):
-
         if messageProtocolEntity.getType() == 'text':
             self.onTextMessage(messageProtocolEntity)
         elif messageProtocolEntity.getType() == 'media':
@@ -46,33 +48,40 @@ class BeholderLayer(YowInterfaceLayer):
        if self.__node_enabled == False :
            self.__node_enabled = True
            print("Enabling node: "+ self.__alias)
-           messageProtocolEntity.setBody("Enabling node: "+ self.__alias)
+           messageProtocolEntity.setBody("Enabling node '"+ self.__alias+"'")
            self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
 
     def disableNode(self,messageProtocolEntity):
        if self.__node_enabled == True : 
            self.__node_enabled = False
            print("Disabling node: "+ self.__alias)
-           messageProtocolEntity.setBody("Disabling node: "+ self.__alias)
+           messageProtocolEntity.setBody("Disabling node '"+ self.__alias+"'")
            self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
 
     def sayHello(self,messageProtocolEntity):
-        messageProtocolEntity.setBody("Hello from: "+ self.__alias)
+        messageProtocolEntity.setBody("Hello from '"+ self.__alias+"'")
         self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
 
     def detect(self,messageProtocolEntity):
+       messageProtocolEntity.setBody("Enable detection for '"+ self.__alias+"'")
+       self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
        try:
-           GPIO.add_event_detect(PIR_PIN, GPIO.RISING, callback=MOTION)
-           GPIO.add_event_detect(SOUND_PIN, GPIO.RISING, callback=SOUND)
-               while self.__node_enabled == True:
-                   time.sleep(100)
+           if self.__pir_pin > 0 :
+               gpio.add_event_detect(self.__pir_pin, gpio.RISING, callback=lambda x: self.motion_sensor(self.__pir_pin, messageProtocolEntity), bouncetime=200)
+           if self.__sound_pin > 0 :
+               gpio.add_event_detect(self.__sound_pin, gpio.RISING, callback=lambda x: self.sound_sensor(self.__sound_pin, messageProtocolEntity), bouncetime=200)
+           while self.__node_enabled == True:
+               time.sleep(100)
+       except KeyboardInterrupt:
+           print("\n"+ self.__alias +" down")
+           sys.exit(0)
 
+    def motion_sensor(self, pir_pin, messageProtocolEntity):
+        messageProtocolEntity.setBody("Motion detected in '"+ self.__alias+"'")
+        self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
 
-    def MOTION(PIR_PIN):
-       print "Motion Detected!"
-
-    def SOUND(SOUND_PIN):
-       print "Sound Detected!"
+    def sound_sensor(self, sound_pini, messageProtocolEntity):
+        print "Sound Detected!"
 
     @ProtocolEntityCallback("receipt")
     def onReceipt(self, entity):
@@ -93,7 +102,7 @@ class BeholderLayer(YowInterfaceLayer):
                 self.disableNode(messageProtocolEntity)
         elif "detect" in string.lower(messageProtocolEntity.getBody()):
             if self.__node_enabled == True :
-                self.detect():
+                self.detect(messageProtocolEntity)
         # Execute command if possible.
         elif string.lower(messageProtocolEntity.getBody())=="reboot":
             if self.__node_enabled == True :
