@@ -9,8 +9,8 @@ import sys
 class BeholderLayer(YowInterfaceLayer):
     __allowed_users = []
     __alias = ""
-    __node_enabled = False
-    __node_selected = False
+    __node_enabled = []
+    __node_selected = []
     #Define raspberry gpio input/output
     __pir_pin = 0
     __sound_pin = 0
@@ -47,7 +47,7 @@ class BeholderLayer(YowInterfaceLayer):
 
     def selectNode(self,messageProtocolEntity):
        print("Selecting node: "+ self.__alias)
-       self.__node_selected = True
+       self.__node_selected.append(messageProtocolEntity.getFrom())
        messageProtocolEntity.setBody("Selecting node '"+ self.__alias+"'")
        self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
 
@@ -64,14 +64,14 @@ class BeholderLayer(YowInterfaceLayer):
 
     def unselectNode(self,messageProtocolEntity):
        print("Unselecting node: "+ self.__alias)
-       self.__node_selected = False
+       self.__node_selected.remove(messageProtocolEntity.getFrom())
        messageProtocolEntity.setBody("Unselecting node '" + self.__alias + "'")
        self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
 
 
     def disableNode(self,messageProtocolEntity):
-       if self.__node_enabled == True : 
-           self.__node_enabled = False
+       if messageProtocolEntity.getFrom() in self.__node_enabled: 
+           self.__node_enabled.remove(messageProtocolEntity.getFrom())
            print("Disabling node: "+ self.__alias)
            messageProtocolEntity.setBody("Disabling node '"+ self.__alias + "'")
            self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
@@ -81,21 +81,22 @@ class BeholderLayer(YowInterfaceLayer):
         self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
 
     def enableNode(self,messageProtocolEntity):
-       if self.__node_enabled == False :
-           self.__node_enabled = True
+       print(messageProtocolEntity.getFrom())
+       if messageProtocolEntity.getFrom() not in self.__node_enabled:
+           self.__node_enabled.append(messageProtocolEntity.getFrom())
            print("Enabling node: " + self.__alias)
-           messageProtocolEntity.setBody("Enable node '" + self.__alias + "'")
+           messageProtocolEntity.setBody("Enabling node '" + self.__alias + "'")
            self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
 
     def motion_sensor(self, pir_pin, messageProtocolEntity):
-        if self.__node_enabled == True :
+        for phone in self.__node_enabled:
             messageProtocolEntity.setBody("Motion detected in '" + self.__alias + "'")
-            self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
+            self.toLower(messageProtocolEntity.forward(phone))
 
     def sound_sensor(self, sound_pini, messageProtocolEntity):
-        if self.__node_enabled == True :
+        for phone in self.__node_enabled:
             messageProtocolEntity.setBody("Sound detected in '" + self.__alias + "'")
-            self.toLower(messageProtocolEntity.forward(messageProtocolEntity.getFrom()))
+            self.toLower(messageProtocolEntity.forward(phone))
 
     def showHelp(self, messageProtocolEntity):
         messageProtocolEntity.setBody("Available commands:\n\thello\n\tselect <alias>\n\tenable\n\tdisable")
@@ -119,12 +120,11 @@ class BeholderLayer(YowInterfaceLayer):
                 if string.lower(self.__alias) in string.lower(messageProtocolEntity.getBody()):
                     self.selectNode(messageProtocolEntity)
             elif "disable" in string.lower(messageProtocolEntity.getBody()):
-                if self.__node_selected == True:
+                if messageProtocolEntity.getFrom() in self.__node_selected :
                     self.disableNode(messageProtocolEntity)
             elif "enable" in string.lower(messageProtocolEntity.getBody()):
-                if self.__node_selected == True:
-                    if self.__node_enabled == False :
-                        self.enableNode(messageProtocolEntity)
+                if messageProtocolEntity.getFrom() in self.__node_selected:
+                    self.enableNode(messageProtocolEntity)
             # Execute command if possible.
             elif string.lower(messageProtocolEntity.getBody()) == "reboot":
                 if self.__node_selected == True :
