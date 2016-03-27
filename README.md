@@ -58,4 +58,5 @@ For using this application at least you need to select the node first, and then 
 ## Multiuser
 
 Different users that are in `allowed_users` list can receive the alert messages. 
-Each time a user want to access to the alerts system, must "subscribe" to the node with the `enable` command. It automatically starts to receive any alerts that is launched from the system. Also, if later the user executes the `disable` command, he will stop receiving any alert. But this command does not affect any other subscribed user that will still be suscribed to the alert system. 
+
+Each time a user want to access to the alerts system, must "subscribe" to the node with the `enable` command. He will automatically receive any alerts that will be launched from the system. Also, if later the user executes the `disable` command, he will stop receiving any alert. But this command does not affect any other subscribed user that still will be suscribed to the alert system. 
