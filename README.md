@@ -54,3 +54,8 @@ If everything is running, from your whatsapp application, you can use the next m
 	help            shows these options.
 
 For using this application at least you need to select the node first, and then start the detection. 
+
+## Multiuser
+
+Different users that are in `allowed_users` list can receive the alert messages. 
+Each time a user want to access to the alerts system, must "subscribe" to the node with the `enable` command. It automatically starts to receive any alerts that is launched from the system. Also, if later the user executes the `disable` command, he will stop receiving any alert. But this command does not affect any other subscribed user that will still be suscribed to the alert system. 
